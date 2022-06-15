@@ -1,4 +1,4 @@
-module lolidelgado/github-users
+module github.com/LoliDelgado/ondemand-go-bootcamp
 
 go 1.18
 

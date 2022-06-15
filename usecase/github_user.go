@@ -3,8 +3,8 @@
 package usecase
 
 import (
-	"lolidelgado/github-users/models"
-	"lolidelgado/github-users/repository"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/model"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/repository"
 )
 
 type GithubUserUseCase struct {
@@ -17,9 +17,9 @@ func NewGithubUser(githubUserRepo *repository.GithubUser) *GithubUserUseCase {
 	}
 }
 
-func (g *GithubUserUseCase) FetchAll() ([]models.GithubUser, error) {
+func (g *GithubUserUseCase) FetchAll() ([]model.GithubUser, error) {
 	return g.githubUserRepo.FetchAll()
 }
-func (g *GithubUserUseCase) GetById(id int) ([]models.GithubUser, error) {
+func (g *GithubUserUseCase) GetById(id int) ([]model.GithubUser, error) {
 	return g.githubUserRepo.GetById(id)
 }

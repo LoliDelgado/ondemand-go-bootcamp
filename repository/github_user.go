@@ -5,9 +5,10 @@ import (
 	"encoding/csv"
 	"io"
 	"log"
-	"lolidelgado/github-users/models"
 	"os"
 	"strconv"
+
+	"github.com/LoliDelgado/ondemand-go-bootcamp/model"
 )
 
 type GithubUser struct {
@@ -15,7 +16,7 @@ type GithubUser struct {
 }
 
 type IGithubUserRepository interface {
-	FetchAll() ([]models.GithubUser, error)
+	FetchAll() ([]model.GithubUser, error)
 }
 
 const staticFilesPath = "static/"
@@ -26,7 +27,7 @@ func NewGithubUser(fileName string) *GithubUser {
 	}
 }
 
-func (g *GithubUser) FetchAll() ([]models.GithubUser, error) {
+func (g *GithubUser) FetchAll() ([]model.GithubUser, error) {
 	lines, err := g.readCsv()
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func (g *GithubUser) FetchAll() ([]models.GithubUser, error) {
 	return arrayToGithubUser(lines), nil
 }
 
-func (g *GithubUser) GetById(id int) ([]models.GithubUser, error) {
+func (g *GithubUser) GetById(id int) ([]model.GithubUser, error) {
 	lines, err := g.readCsv()
 	if err != nil {
 		return nil, err
@@ -49,7 +50,7 @@ func (g *GithubUser) GetById(id int) ([]models.GithubUser, error) {
 	if len(user) > 0 {
 		return arrayToGithubUser(user), nil
 	} else {
-		return []models.GithubUser{}, nil
+		return []model.GithubUser{}, nil
 	}
 }
 
@@ -78,8 +79,8 @@ func (g *GithubUser) readCsv() ([][]string, error) {
 	return lines, nil
 }
 
-func arrayToGithubUser(lines [][]string) []models.GithubUser {
-	var githubUsers []models.GithubUser
+func arrayToGithubUser(lines [][]string) []model.GithubUser {
+	var githubUsers []model.GithubUser
 	for _, line := range lines {
 		id, err := strconv.Atoi(line[0])
 		if err != nil {
@@ -89,7 +90,7 @@ func arrayToGithubUser(lines [][]string) []models.GithubUser {
 		if err != nil {
 			publicRepos = 0
 		}
-		data := models.NewGithubUser(id, line[1], line[2], line[3], line[4], publicRepos)
+		data := model.NewGithubUser(id, line[1], line[2], line[3], line[4], publicRepos)
 		githubUsers = append(githubUsers, data)
 	}
 	return githubUsers

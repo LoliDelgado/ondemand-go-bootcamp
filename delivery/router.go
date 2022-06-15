@@ -1,7 +1,7 @@
 package delivery
 
 import (
-	"lolidelgado/github-users/controller"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/controller"
 
 	"github.com/gorilla/mux"
 )

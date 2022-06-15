@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"lolidelgado/github-users/usecase"
 	"net/http"
 	"strconv"
+
+	"github.com/LoliDelgado/ondemand-go-bootcamp/usecase"
 
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"

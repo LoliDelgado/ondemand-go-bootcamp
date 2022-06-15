@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
-	"lolidelgado/github-users/controller"
-	"lolidelgado/github-users/delivery"
-	"lolidelgado/github-users/repository"
-	"lolidelgado/github-users/usecase"
 	"net/http"
+
+	"github.com/LoliDelgado/ondemand-go-bootcamp/controller"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/delivery"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/repository"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/usecase"
 
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
