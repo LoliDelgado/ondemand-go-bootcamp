@@ -19,6 +19,11 @@ type GithubUser struct {
 	g      *usecase.GithubUserUseCase
 }
 
+type IGithubUserControler interface {
+	GetGithubUsers(rw http.ResponseWriter, req http.Request)
+	GetGithubUserById(rw http.ResponseWriter, req http.Request)
+}
+
 // NewGithubUser initializes the controller
 func NewGithubUser(r *render.Render, g *usecase.GithubUserUseCase) *GithubUser {
 	return &GithubUser{r, g}

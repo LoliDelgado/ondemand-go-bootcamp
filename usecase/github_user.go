@@ -1,5 +1,5 @@
 //Package usecase processes the information from repository, making any needed calculations, data transformation, etc.
-//If it recieved data it's from controllers, coming from delivery layer
+//If it received data it's from controllers, coming from delivery layer
 package usecase
 
 import (
@@ -9,6 +9,11 @@ import (
 
 type GithubUserUseCase struct {
 	githubUserRepo *repository.GithubUser
+}
+
+type IGithubUserUseCase interface {
+	FetchAll() ([]model.GithubUser, error)
+	GetById(id int) (model.GithubUser, error)
 }
 
 func NewGithubUser(githubUserRepo *repository.GithubUser) *GithubUserUseCase {
