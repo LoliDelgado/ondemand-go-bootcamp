@@ -1,5 +1,9 @@
 # On Demand Academy Go Bootcamp
 
+## Setup
+
+Update the env variables that are used to read the data from a file in app.env as you need
+
 ## How to run
 
 ```go

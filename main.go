@@ -1,8 +1,10 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/LoliDelgado/ondemand-go-bootcamp/config"
 	"github.com/LoliDelgado/ondemand-go-bootcamp/controller"
 	"github.com/LoliDelgado/ondemand-go-bootcamp/delivery"
 	"github.com/LoliDelgado/ondemand-go-bootcamp/repository"
@@ -14,12 +16,15 @@ import (
 )
 
 func main() {
+	config, err := config.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config file", err)
+	}
 	// logger
 	var log = logrus.New()
 
-	const fileName = "github_users.csv"
 	// repository
-	githubUserRepo := repository.NewGithubUser(fileName)
+	githubUserRepo := repository.NewGithubUser(config.SourceFileName, config.SourceFilePath)
 
 	// useCase
 	githubUserUseCase := usecase.NewGithubUser(githubUserRepo)
@@ -35,9 +40,9 @@ func main() {
 	)
 
 	// start server
-	log.Info("Starting server at port 7000")
+	log.Info("Starting server at port " + config.Port)
 
-	err := http.ListenAndServe(":7000", httpRouter)
+	err = http.ListenAndServe(":"+config.Port, httpRouter)
 	if err != nil {
 		log.Fatal("starting server:", err)
 	}

@@ -13,7 +13,8 @@ import (
 )
 
 type GithubUser struct {
-	githubUserCsvFileName string
+	csvFileName string
+	csvFilePath string
 }
 
 type IGithubUserRepository interface {
@@ -21,11 +22,10 @@ type IGithubUserRepository interface {
 	GetById(id int) (model.GithubUser, error)
 }
 
-const staticFilesPath = "static/"
-
-func NewGithubUser(fileName string) *GithubUser {
+func NewGithubUser(fileName, filePath string) *GithubUser {
 	return &GithubUser{
 		fileName,
+		filePath,
 	}
 }
 
@@ -72,7 +72,7 @@ func (g *GithubUser) GetById(id int) (model.GithubUser, error) {
 
 func (g *GithubUser) readCsv() ([][]string, error) {
 	//csv reader
-	file, err := os.Open(staticFilesPath + g.githubUserCsvFileName)
+	file, err := os.Open(g.csvFilePath + "/" + g.csvFileName)
 	if err != nil {
 		return nil, fmt.Errorf("Error while opening csv file: %w", err)
 	}
