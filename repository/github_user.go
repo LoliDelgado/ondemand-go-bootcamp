@@ -3,8 +3,9 @@ package repository
 
 import (
 	"encoding/csv"
+	"errors"
+	"fmt"
 	"io"
-	"log"
 	"os"
 	"strconv"
 
@@ -17,6 +18,7 @@ type GithubUser struct {
 
 type IGithubUserRepository interface {
 	FetchAll() ([]model.GithubUser, error)
+	GetById(id int) (model.GithubUser, error)
 }
 
 const staticFilesPath = "static/"
@@ -27,6 +29,7 @@ func NewGithubUser(fileName string) *GithubUser {
 	}
 }
 
+// FetchAll returns an array of all the available users in the csv file, and any error if exist
 func (g *GithubUser) FetchAll() ([]model.GithubUser, error) {
 	lines, err := g.readCsv()
 	if err != nil {
@@ -35,23 +38,33 @@ func (g *GithubUser) FetchAll() ([]model.GithubUser, error) {
 	return arrayToGithubUser(lines), nil
 }
 
-func (g *GithubUser) GetById(id int) ([]model.GithubUser, error) {
+// GetById returns a github user if found in the csv file, and any error if exist
+func (g *GithubUser) GetById(id int) (model.GithubUser, error) {
 	lines, err := g.readCsv()
 	if err != nil {
-		return nil, err
+		return model.GithubUser{}, fmt.Errorf("Error getting data from csv file: %w", err)
 	}
 	var user [][]string
 	for _, line := range lines {
-		if idFromFile, _ := strconv.Atoi(line[0]); idFromFile == id {
+		idFromFile, err := strconv.Atoi(line[0])
+		if err != nil {
+			return model.GithubUser{}, fmt.Errorf("Eror converting id from file: %w", err)
+		}
+		if idFromFile == id {
 			user = append(user, line)
 			break
 		}
 	}
-	if len(user) > 0 {
-		return arrayToGithubUser(user), nil
-	} else {
-		return []model.GithubUser{}, nil
+
+	if len(user) == 1 {
+		githubUser := user[0]
+		publicRepos, err := strconv.Atoi(githubUser[5])
+		if err != nil {
+			publicRepos = 0
+		}
+		return model.NewGithubUser(model.GithubUser{ID: id, Login: githubUser[1], Name: githubUser[2], Company: githubUser[3], Bio: githubUser[4], PublicRepos: publicRepos}), nil
 	}
+	return model.GithubUser{}, errors.New("Github User not found")
 }
 
 func (g *GithubUser) readCsv() ([][]string, error) {
@@ -70,7 +83,7 @@ func (g *GithubUser) readCsv() ([][]string, error) {
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		if _, err := strconv.Atoi(record[0]); err == nil {
 			lines = append(lines, record)
@@ -80,7 +93,8 @@ func (g *GithubUser) readCsv() ([][]string, error) {
 }
 
 func arrayToGithubUser(lines [][]string) []model.GithubUser {
-	var githubUsers []model.GithubUser
+	// Create a slice of length 0, but capacity for the amount of data received
+	githubUsers := make([]model.GithubUser, 0, len(lines))
 	for _, line := range lines {
 		id, err := strconv.Atoi(line[0])
 		if err != nil {
@@ -90,7 +104,8 @@ func arrayToGithubUser(lines [][]string) []model.GithubUser {
 		if err != nil {
 			publicRepos = 0
 		}
-		data := model.NewGithubUser(id, line[1], line[2], line[3], line[4], publicRepos)
+
+		data := model.NewGithubUser(model.GithubUser{ID: id, Login: line[1], Name: line[2], Company: line[3], Bio: line[4], PublicRepos: publicRepos})
 		githubUsers = append(githubUsers, data)
 	}
 	return githubUsers

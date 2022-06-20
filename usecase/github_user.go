@@ -20,6 +20,7 @@ func NewGithubUser(githubUserRepo *repository.GithubUser) *GithubUserUseCase {
 func (g *GithubUserUseCase) FetchAll() ([]model.GithubUser, error) {
 	return g.githubUserRepo.FetchAll()
 }
-func (g *GithubUserUseCase) GetById(id int) ([]model.GithubUser, error) {
+
+func (g *GithubUserUseCase) GetById(id int) (model.GithubUser, error) {
 	return g.githubUserRepo.GetById(id)
 }

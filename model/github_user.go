@@ -1,7 +1,7 @@
 package model
 
 type GithubUser struct {
-	Id          int
+	ID          int
 	Login       string
 	Name        string
 	Company     string
@@ -9,6 +9,13 @@ type GithubUser struct {
 	PublicRepos int
 }
 
-func NewGithubUser(id int, login, name, company, bio string, publicrepos int) GithubUser {
-	return GithubUser{Id: id, Login: login, Name: name, Company: company, Bio: bio, PublicRepos: publicrepos}
+func NewGithubUser(g GithubUser) GithubUser {
+	return GithubUser{
+		ID:          g.ID,
+		Login:       g.Login,
+		Name:        g.Name,
+		Company:     g.Company,
+		Bio:         g.Bio,
+		PublicRepos: g.PublicRepos,
+	}
 }
