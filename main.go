@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/LoliDelgado/ondemand-go-bootcamp/config"
@@ -16,12 +15,13 @@ import (
 )
 
 func main() {
+	// logger
+	var log = logrus.New()
+
 	config, err := config.LoadConfig(".")
 	if err != nil {
 		log.Fatal("cannot load config file", err)
 	}
-	// logger
-	var log = logrus.New()
 
 	// repository
 	githubUserRepo := repository.NewGithubUser(config.SourceFileName, config.SourceFilePath)

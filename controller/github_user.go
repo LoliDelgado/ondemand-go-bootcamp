@@ -2,10 +2,10 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/LoliDelgado/ondemand-go-bootcamp/model"
 	"github.com/LoliDelgado/ondemand-go-bootcamp/usecase"
 
 	"github.com/gorilla/mux"
@@ -33,7 +33,10 @@ func NewGithubUser(r *render.Render, g *usecase.GithubUserUseCase) *GithubUser {
 func (c *GithubUser) GetGithubUsers(rw http.ResponseWriter, req *http.Request) {
 	githubUsers, err := c.g.FetchAll()
 	if err != nil {
-		c.render.Text(rw, http.StatusInternalServerError, fmt.Sprintf("This is not fine🔥\nAnd the reason is: %s", err))
+		c.render.JSON(rw, err.StatusCode, map[string]interface{}{
+			"message": "This is not fine🔥",
+			"reason":  err.ErrorWithoutContext(),
+		})
 		return
 	}
 
@@ -47,14 +50,26 @@ func (c *GithubUser) GetGithubUserById(rw http.ResponseWriter, req *http.Request
 
 	numericId, err := strconv.Atoi(id)
 	if err != nil {
-		c.render.Text(rw, http.StatusBadRequest, "invalid id")
+		c.render.JSON(rw, http.StatusBadRequest, map[string]interface{}{
+			"message": "This is not fine🔥",
+			"reason":  "Invalid ID",
+		})
 		return
 	}
 
-	githubUser, err := c.g.GetById(numericId)
-	if err != nil {
-		c.render.Text(rw, http.StatusInternalServerError, fmt.Sprintf("This is not fine🔥\nAnd the reason is: %s", err))
-		return
+	githubUser, _err := c.g.GetById(numericId)
+	if _err != nil {
+		if _err.StatusCode >= 500 {
+			c.render.JSON(rw, _err.StatusCode, map[string]interface{}{
+				"message": "This is not fine🔥",
+				"reason":  _err.ErrorWithoutContext(),
+			})
+			return
+		}
+		if _err.StatusCode > 400 {
+			c.render.JSON(rw, http.StatusNotFound, model.GithubUser{})
+			return
+		}
 	}
 
 	c.render.JSON(rw, http.StatusOK, githubUser)

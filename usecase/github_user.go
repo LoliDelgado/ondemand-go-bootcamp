@@ -3,8 +3,11 @@
 package usecase
 
 import (
+	"log"
+
 	"github.com/LoliDelgado/ondemand-go-bootcamp/model"
 	"github.com/LoliDelgado/ondemand-go-bootcamp/repository"
+	"github.com/LoliDelgado/ondemand-go-bootcamp/util"
 )
 
 type GithubUserUseCase struct {
@@ -22,10 +25,58 @@ func NewGithubUser(githubUserRepo *repository.GithubUser) *GithubUserUseCase {
 	}
 }
 
-func (g *GithubUserUseCase) FetchAll() ([]model.GithubUser, error) {
-	return g.githubUserRepo.FetchAll()
+// FetchAll gets info from repository layer and handles any error that might come
+// Handling errors at this point provides a more detailed information to the controller layer to provide a better response
+func (g *GithubUserUseCase) FetchAll() ([]model.GithubUser, *util.RequestError) {
+	logger := log.Default()
+
+	githubUsers, err := g.githubUserRepo.FetchAll()
+
+	if err != nil {
+		var responseError *util.RequestError
+		errorInfo := err.WithoutContext()
+
+		if errorInfo == repository.ErrOpeningCSV {
+			logger.Println("Error opening CSV file in " + err.Context)
+			responseError = util.NewRequestError(404, err)
+		}
+
+		if errorInfo == repository.ErrReadingLineCSV || errorInfo == repository.ErrInvalidIdCSV {
+			logger.Println("Error reading CSV file in " + err.Context)
+			responseError = util.NewRequestError(500, err)
+		}
+
+		if responseError != nil {
+			return nil, responseError
+		}
+	}
+
+	return githubUsers, nil
 }
 
-func (g *GithubUserUseCase) GetById(id int) (model.GithubUser, error) {
-	return g.githubUserRepo.GetById(id)
+// GetById gets info from repository layer and returns the githubUser matching the received id
+// Handling errors at this point provides a more detailed information to the controller layer to provide a better response
+func (g *GithubUserUseCase) GetById(id int) (model.GithubUser, *util.RequestError) {
+	logger := log.Default()
+
+	githubUser, err := g.githubUserRepo.GetById(id)
+	if err != nil {
+		var responseError *util.RequestError
+		errorInfo := err.WithoutContext()
+
+		if errorInfo == repository.ErrReadingLineCSV || errorInfo == repository.ErrInvalidIdCSV || errorInfo == repository.ErrOpeningCSV {
+			logger.Println("Error reading CSV file in " + err.Context)
+			responseError = util.NewRequestError(500, err)
+		}
+
+		if errorInfo == repository.ErrGithubUserNotFound {
+			logger.Println("No match found from " + err.Context)
+			responseError = util.NewRequestError(404, err)
+		}
+
+		if responseError != nil {
+			return model.GithubUser{}, responseError
+		}
+	}
+	return githubUser, nil
 }
