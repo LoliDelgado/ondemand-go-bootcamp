@@ -1,5 +1,29 @@
 # On Demand Academy Go Bootcamp
 
+## Setup
+
+Update the env variables that are used to read the data from a file in app.env as you need
+
+## How to run
+
+```go
+go run main.go
+```
+
+### debug using VSCODE
+
+Add this json snippet to your debugging configs
+```json
+{
+    "name": "Debug go",
+    "type": "go",
+    "request": "launch",
+    "mode": "auto",
+    "program": "${workspaceFolder}/main.go",
+    "args": []
+}
+```
+
 ## Introduction
 
 Thank you for participating in the Golang Bootcamp course!
