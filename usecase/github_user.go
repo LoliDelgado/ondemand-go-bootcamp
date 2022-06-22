@@ -36,12 +36,7 @@ func (g *GithubUserUseCase) FetchAll() ([]model.GithubUser, *util.RequestError) 
 		var responseError *util.RequestError
 		errorInfo := err.WithoutContext()
 
-		if errorInfo == repository.ErrOpeningCSV {
-			logger.Println("Error opening CSV file in " + err.Context)
-			responseError = util.NewRequestError(404, err)
-		}
-
-		if errorInfo == repository.ErrReadingLineCSV || errorInfo == repository.ErrInvalidIdCSV {
+		if errorInfo == repository.ErrReadingLineCSV || errorInfo == repository.ErrOpeningCSV {
 			logger.Println("Error reading CSV file in " + err.Context)
 			responseError = util.NewRequestError(500, err)
 		}
@@ -64,14 +59,9 @@ func (g *GithubUserUseCase) GetById(id int) (model.GithubUser, *util.RequestErro
 		var responseError *util.RequestError
 		errorInfo := err.WithoutContext()
 
-		if errorInfo == repository.ErrReadingLineCSV || errorInfo == repository.ErrInvalidIdCSV || errorInfo == repository.ErrOpeningCSV {
+		if errorInfo == repository.ErrReadingLineCSV || errorInfo == repository.ErrOpeningCSV {
 			logger.Println("Error reading CSV file in " + err.Context)
 			responseError = util.NewRequestError(500, err)
-		}
-
-		if errorInfo == repository.ErrGithubUserNotFound {
-			logger.Println("No match found from " + err.Context)
-			responseError = util.NewRequestError(404, err)
 		}
 
 		if responseError != nil {
